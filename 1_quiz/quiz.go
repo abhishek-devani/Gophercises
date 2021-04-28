@@ -14,24 +14,31 @@ func main() {
 	csvFileName := flag.String("csv", "problems.csv", "a csv file in the formate of 'question, answer' ")
 	flag.Parse()
 
-	// opening csv file
-	file, err := os.Open(*csvFileName)
+	openCSV(*csvFileName)
+
+}
+
+func openCSV(csvFileName string) {
+
+	file, err := os.Open(csvFileName)
 	if err != nil {
-		exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", *csvFileName))
+		exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", csvFileName))
 	}
 
-	// read file with io reader
 	r := csv.NewReader(file)
 
-	// read contect of that file
 	lines, err := r.ReadAll()
 	if err != nil {
 		exit("Failed to parse the provided CSV file")
 	}
 
 	problems := ParseLines(lines)
-	// fmt.Println(problems)
 
+	printProblems(problems, lines)
+
+}
+
+func printProblems(problems []problem, lines [][]string) {
 	count := 0
 
 	for i, p := range problems {
@@ -42,7 +49,7 @@ func main() {
 			count++
 		}
 	}
-	fmt.Printf("You scored %d out of %d\n", count, len(lines))
+	fmt.Printf("\nYou scored %d out of %d\n\n", count, len(lines))
 }
 
 func ParseLines(lines [][]string) []problem {
