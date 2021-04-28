@@ -1,0 +1,40 @@
+package main
+
+import (
+	"encoding/csv"
+	"flag"
+	"fmt"
+	"os"
+)
+
+func main() {
+	csvFileName := flag.String("csv", "problems.csv", "a csv file with 'question, answer'")
+	flag.Parse()
+
+	file, err := os.Open(*csvFileName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	r := csv.NewReader(file)
+
+	lines, err := r.ReadAll()
+
+}
+
+func Parselines(lines [][]string) []problem {
+	ret := make([]problem, len(lines))
+	for i, line := range lines {
+		ret[i] = problem{
+			q: line[0],
+			a: line[1],
+		}
+	}
+
+	return ret
+}
+
+type problem struct {
+	q string
+	a string
+}
