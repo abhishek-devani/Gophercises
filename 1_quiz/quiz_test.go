@@ -7,7 +7,7 @@ import (
 )
 
 func TestReadArg(t *testing.T) {
-	inp := ReadArg()
+	inp, _ := ReadArg()
 	exp := "problems.csv"
 	if inp != exp {
 		t.Fatal("error")

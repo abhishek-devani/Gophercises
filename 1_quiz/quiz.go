@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"time"
 )
 
 type problem struct {
@@ -16,12 +17,9 @@ type problem struct {
 
 func main() {
 
-	filename := ReadArg()
-
-	// fmt.Println(filename)
+	filename, timeL := ReadArg()
 
 	file, err := OpenFile(filename)
-	// fmt.Println("out" + fmt.Sprintln(file) + "\n")
 	if err != nil {
 		Exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", filename))
 	}
@@ -30,7 +28,7 @@ func main() {
 
 	problems, err := ParseLines(lines)
 
-	score := PrintProblems(problems)
+	score := PrintProblems(problems, timeL)
 
 	total := len(problems)
 
@@ -38,15 +36,17 @@ func main() {
 
 }
 
-func ReadArg() string {
+func ReadArg() (string, int) {
 	csvFileName := flag.String("csv", "problems.csv", "a csv file in the formate of 'question, answer' ")
+
+	timeLimit := flag.Int("limit", 30, "time in seconds")
+
 	flag.Parse()
-	// fmt.Printf("%T", csvFileName)
-	return *csvFileName
+
+	return *csvFileName, *timeLimit
 }
 
 func OpenFile(filename string) (io.Reader, error) {
-	// fmt.Println("\nin : " + fmt.Sprintln(os.Open(filename)) + "\n")
 	return os.Open(filename)
 }
 
@@ -57,12 +57,11 @@ func ReadCSV(file io.Reader) ([][]string, error) {
 		Exit("Failed to parse the provided CSV file")
 	}
 
-	// fmt.Println(lines)
-
 	return lines, nil
 }
 
 func ParseLines(lines [][]string) ([]problem, error) {
+
 	ret := make([]problem, len(lines))
 	for i, line := range lines {
 		ret[i] = problem{
@@ -70,20 +69,34 @@ func ParseLines(lines [][]string) ([]problem, error) {
 			answer:   strings.TrimSpace(line[1]),
 		}
 	}
-	// fmt.Println(ret)
 	return ret, nil
 }
 
-func PrintProblems(problems []problem) int {
+func PrintProblems(problems []problem, timeL int) int {
+
+	timer := time.NewTimer(time.Duration(timeL) * time.Second)
 
 	count := 0
 
 	for i, p := range problems {
+
 		fmt.Printf("Problem #%d: %s = ", i+1, p.question)
-		var ans string
-		fmt.Scanf("%s\n", &ans)
-		if ans == p.answer {
-			count++
+
+		answerCh := make(chan string)
+
+		go func() {
+			var ans string
+			fmt.Scanf("%s\n", &ans)
+			answerCh <- ans
+		}()
+
+		select {
+		case <-timer.C:
+			return count
+		case answer := <-answerCh:
+			if answer == p.answer {
+				count++
+			}
 		}
 	}
 	return count
