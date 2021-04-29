@@ -6,7 +6,15 @@ import (
 	"testing"
 )
 
-func TestOpenFile(t *testing.T) {
+func TestReadArg(t *testing.T) {
+	inp := ReadArg()
+	exp := "problems.csv"
+	if inp != exp {
+		t.Fatal("error")
+	}
+}
+
+func TestCode(t *testing.T) {
 
 	path := "/home/gslab/Desktop/Gophercises/1_quiz/problems.csv"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -14,17 +22,12 @@ func TestOpenFile(t *testing.T) {
 	}
 
 	f := "problems.csv"
-	input, err := openFile(f)
+	input, err := OpenFile(f)
 	if err != nil {
 		t.Fatal("error")
 	}
 
-	file, err := os.Open(f)
-	if err != nil {
-		t.Fatal("error")
-	}
-
-	lines, err := readCSV(file)
+	lines, err := ReadCSV(input)
 	if err != nil {
 		t.Fatal("error")
 	}
@@ -33,8 +36,6 @@ func TestOpenFile(t *testing.T) {
 	if err != nil {
 		t.Fatal("error")
 	}
-
-	_ = input
 
 	var tes []problem
 

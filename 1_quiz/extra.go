@@ -16,21 +16,21 @@ type problem struct {
 
 func main() {
 
-	filename := readArg()
+	filename := ReadArg()
 
 	// fmt.Println(filename)
 
-	file, err := openFile(filename)
+	file, err := OpenFile(filename)
 	// fmt.Println("out" + fmt.Sprintln(file) + "\n")
 	if err != nil {
-		exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", filename))
+		Exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", filename))
 	}
 
-	lines, err := readCSV(file)
+	lines, err := ReadCSV(file)
 
 	problems, err := ParseLines(lines)
 
-	score := printProblems(problems)
+	score := PrintProblems(problems)
 
 	total := len(problems)
 
@@ -38,23 +38,23 @@ func main() {
 
 }
 
-func readArg() string {
+func ReadArg() string {
 	csvFileName := flag.String("csv", "problems.csv", "a csv file in the formate of 'question, answer' ")
 	flag.Parse()
-
+	// fmt.Printf("%T", csvFileName)
 	return *csvFileName
 }
 
-func openFile(filename string) (io.Reader, error) {
+func OpenFile(filename string) (io.Reader, error) {
 	// fmt.Println("\nin : " + fmt.Sprintln(os.Open(filename)) + "\n")
 	return os.Open(filename)
 }
 
-func readCSV(file io.Reader) ([][]string, error) {
+func ReadCSV(file io.Reader) ([][]string, error) {
 	lines, err := csv.NewReader(file).ReadAll()
 
 	if err != nil {
-		exit("Failed to parse the provided CSV file")
+		Exit("Failed to parse the provided CSV file")
 	}
 
 	// fmt.Println(lines)
@@ -70,11 +70,11 @@ func ParseLines(lines [][]string) ([]problem, error) {
 			answer:   strings.TrimSpace(line[1]),
 		}
 	}
-	fmt.Println(ret)
+	// fmt.Println(ret)
 	return ret, nil
 }
 
-func printProblems(problems []problem) int {
+func PrintProblems(problems []problem) int {
 
 	count := 0
 
@@ -89,7 +89,7 @@ func printProblems(problems []problem) int {
 	return count
 }
 
-func exit(msg string) {
+func Exit(msg string) {
 	fmt.Println(msg)
 	os.Exit(1)
 }
