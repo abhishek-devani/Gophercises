@@ -18,12 +18,17 @@ func main() {
 
 	filename := readArg()
 
+	// fmt.Println(filename)
+
 	file, err := openFile(filename)
+	// fmt.Println("out" + fmt.Sprintln(file) + "\n")
 	if err != nil {
 		exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", filename))
 	}
 
-	problems, err := readCSV(file)
+	lines, err := readCSV(file)
+
+	problems, err := ParseLines(lines)
 
 	score := printProblems(problems)
 
@@ -41,18 +46,20 @@ func readArg() string {
 }
 
 func openFile(filename string) (io.Reader, error) {
+	// fmt.Println("\nin : " + fmt.Sprintln(os.Open(filename)) + "\n")
 	return os.Open(filename)
 }
 
-func readCSV(file io.Reader) ([]problem, error) {
+func readCSV(file io.Reader) ([][]string, error) {
 	lines, err := csv.NewReader(file).ReadAll()
 
 	if err != nil {
 		exit("Failed to parse the provided CSV file")
 	}
-	problems, err := ParseLines(lines)
 
-	return problems, nil
+	// fmt.Println(lines)
+
+	return lines, nil
 }
 
 func ParseLines(lines [][]string) ([]problem, error) {
@@ -63,10 +70,12 @@ func ParseLines(lines [][]string) ([]problem, error) {
 			answer:   strings.TrimSpace(line[1]),
 		}
 	}
+	fmt.Println(ret)
 	return ret, nil
 }
 
 func printProblems(problems []problem) int {
+
 	count := 0
 
 	for i, p := range problems {
