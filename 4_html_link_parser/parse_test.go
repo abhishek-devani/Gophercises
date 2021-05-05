@@ -7,7 +7,7 @@ import (
 )
 
 func TestCode(t *testing.T) {
-	s, err := os.Open("ex2.html")
+	s, err := os.Open("/home/gslab/Desktop/Gophercises/4_html_link_parser/examples/ex2.html")
 	if err != nil {
 		panic(err)
 	}
