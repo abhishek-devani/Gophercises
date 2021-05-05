@@ -21,24 +21,6 @@ func TestCode(t *testing.T) {
 	actual := fmt.Sprintf("%+v\n", links)
 
 	if actual != exp {
-		// t.Fatal("error")
 		t.Fatalf("expected: %+v\n actual: %+v", exp, actual)
-		// t.Fatalf("actual: %+v", actual)
 	}
 }
-
-// s, err := os.Open(*filename)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	links, err := link.Parse(s)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	for _, i := range links {
-// 		fmt.Println("Href: ", i.Href)
-// 		fmt.Println("Text: ", i.Text)
-// 	}
-// 	return
