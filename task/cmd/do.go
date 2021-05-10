@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"main/go/src/github.com/abhishek-devani/Gophercises/task/db"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -21,7 +22,23 @@ var doCmd = &cobra.Command{
 				ids = append(ids, id)
 			}
 		}
-		fmt.Println(ids)
+		tasks, err := db.AllTasks()
+		if err != nil {
+			panic(err)
+		}
+		for _, id := range ids {
+			if id <= 0 || id > len(tasks) {
+				fmt.Println("Invalid Task Number:", id)
+				continue
+			}
+			task := tasks[id-1]
+			err := db.DeleteTasks(task.Key)
+			if err != nil {
+				panic(err)
+			} else {
+				fmt.Printf("Marked \"%d\" as completed.\n", id)
+			}
+		}
 	},
 }
 
