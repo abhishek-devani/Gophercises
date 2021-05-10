@@ -8,7 +8,3 @@ var RootCmd = &cobra.Command{
 	Use:   "task",
 	Short: "task is CLI task manager",
 }
-
-// func init() {
-// 	RootCmd.AddCommand(RootCmd)
-// }
