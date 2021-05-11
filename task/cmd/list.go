@@ -7,16 +7,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// listCmd represents the list command
+var MockList1 bool
+var MockList2 bool
+
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all of your tasks",
 	Run: func(cmd *cobra.Command, args []string) {
 		tasks, err := db.AllTasks()
-		if err != nil {
-			panic(err)
+		if err != nil || MockList1 {
+			fmt.Println(err)
+			return
 		}
-		if len(tasks) == 0 {
+		if len(tasks) == 0 || MockList2 {
 			fmt.Println("You have no task to complete! yeah")
 			return
 		}

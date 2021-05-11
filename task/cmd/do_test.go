@@ -12,7 +12,7 @@ func TestDo(t *testing.T) {
 
 }
 
-func TestMock1(t *testing.T) {
+func TestMock(t *testing.T) {
 
 	db := startDB()
 	defer db.Close()
