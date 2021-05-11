@@ -15,7 +15,7 @@ var addCmd = &cobra.Command{
 	Short: "Adds a tak to your task list",
 	Run: func(cmd *cobra.Command, args []string) {
 		task = strings.Join(args, " ")
-		_, err := db.CreateTask(task)
+		err := db.CreateTask(task)
 		if err != nil {
 			panic(err)
 		}
