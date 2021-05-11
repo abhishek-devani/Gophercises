@@ -10,7 +10,9 @@ import (
 var taskBucket = []byte("tasks")
 var db *bolt.DB
 
-var Mock bool
+var InitMock bool
+var CreateMock bool
+var AllMock bool
 
 type Task struct {
 	Key   int
@@ -20,7 +22,7 @@ type Task struct {
 func Init(dbPath string) error {
 	var err error
 	db, err = bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil || Mock {
+	if err != nil || InitMock {
 		return err
 	}
 	return db.Update(func(tx *bolt.Tx) error {
@@ -38,7 +40,7 @@ func CreateTask(task string) error {
 		key := itob(id)
 		return b.Put(key, []byte(task))
 	})
-	if err != nil || Mock {
+	if err != nil || CreateMock {
 		return err
 	}
 	return nil
@@ -58,7 +60,7 @@ func AllTasks() ([]Task, error) {
 		}
 		return nil
 	})
-	if err != nil || Mock {
+	if err != nil || AllMock {
 		return nil, err
 	}
 	return tasks, nil

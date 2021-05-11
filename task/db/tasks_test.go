@@ -10,10 +10,13 @@ import (
 func TestInit(t *testing.T) {
 	home, _ := homedir.Dir()
 	dbPath := filepath.Join(home, "tasks.db")
+
 	err := Init(dbPath)
+
 	if err != nil {
 		t.Fatal(err)
 	}
+
 }
 
 func TestCreateTask(t *testing.T) {
@@ -54,4 +57,19 @@ func TestBtoi(t *testing.T) {
 	if CovertedInt == 0 {
 		t.Fatal("Conversion Failed")
 	}
+}
+
+func TestError(t *testing.T) {
+
+	CreateMock = true
+	CreateTask("Task Create")
+
+	AllMock = true
+	AllTasks()
+
+	InitMock = true
+	home, _ := homedir.Dir()
+	dbPath := filepath.Join(home, "tasks.db")
+	_ = Init(dbPath)
+
 }
