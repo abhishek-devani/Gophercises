@@ -25,6 +25,7 @@ var doCmd = &cobra.Command{
 				ids = append(ids, id)
 			}
 		}
+		var err error
 		tasks, err := db.AllTasks()
 		if err != nil || MockDo2 {
 			return
