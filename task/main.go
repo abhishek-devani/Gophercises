@@ -8,12 +8,14 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+var Mock bool
+
 func main() {
 	home, _ := homedir.Dir()
 	dbPath := filepath.Join(home, "tasks.db")
 	err := db.Init(dbPath)
-	if err != nil {
-		panic(err)
+	if err != nil || Mock {
+		return
 	}
 	cmd.RootCmd.Execute()
 }

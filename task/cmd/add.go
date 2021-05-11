@@ -8,11 +8,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var task string
+
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Adds a tak to your task list",
 	Run: func(cmd *cobra.Command, args []string) {
-		task := strings.Join(args, " ")
+		task = strings.Join(args, " ")
 		_, err := db.CreateTask(task)
 		if err != nil {
 			panic(err)
@@ -21,6 +23,10 @@ var addCmd = &cobra.Command{
 	},
 }
 
-func init() {
+func check() {
 	RootCmd.AddCommand(addCmd)
+}
+
+func init() {
+	check()
 }
