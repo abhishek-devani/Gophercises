@@ -13,7 +13,7 @@ var Mock bool
 func main() {
 	home, _ := homedir.Dir()
 	dbPath := filepath.Join(home, "tasks.db")
-	err := db.Init(dbPath)
+	_, err := db.Init(dbPath)
 	if err != nil || Mock {
 		return
 	}

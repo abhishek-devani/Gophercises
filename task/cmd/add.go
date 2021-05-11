@@ -8,25 +8,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var task string
+var MockAdd bool
 
 var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Adds a tak to your task list",
 	Run: func(cmd *cobra.Command, args []string) {
-		task = strings.Join(args, " ")
+		task := strings.Join(args, " ")
 		err := db.CreateTask(task)
-		if err != nil {
-			panic(err)
+		if err != nil || MockAdd {
+			return
 		}
 		fmt.Printf("Added \"%s\" to your task list\n", task)
 	},
 }
 
-func check() {
-	RootCmd.AddCommand(addCmd)
-}
-
 func init() {
-	check()
+	RootCmd.AddCommand(addCmd)
 }

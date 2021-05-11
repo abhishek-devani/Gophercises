@@ -11,7 +11,7 @@ func TestInit(t *testing.T) {
 	home, _ := homedir.Dir()
 	dbPath := filepath.Join(home, "tasks.db")
 
-	err := Init(dbPath)
+	_, err := Init(dbPath)
 
 	if err != nil {
 		t.Fatal(err)
@@ -70,6 +70,6 @@ func TestError(t *testing.T) {
 	InitMock = true
 	home, _ := homedir.Dir()
 	dbPath := filepath.Join(home, "tasks.db")
-	_ = Init(dbPath)
+	_, _ = Init(dbPath)
 
 }
