@@ -23,7 +23,7 @@ func recoverMw(app http.Handler, dev bool) http.HandlerFunc {
 			if err := recover(); err != nil {
 				log.Println(err)
 				stack := debug.Stack()
-				// log.Println(string(stack))
+				log.Println(string(stack))
 				if !dev {
 					http.Error(w, "Something went wrong :(", http.StatusInternalServerError)
 					return
