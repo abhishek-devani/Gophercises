@@ -8,8 +8,8 @@ import (
 )
 
 func TestMain(t *testing.T) {
-	mux := http.NewServeMux()
-	devMw(mux)
+	temp1 = true
+	main()
 }
 
 func TestMakeLinks(t *testing.T) {
@@ -66,14 +66,14 @@ func TestSourceHandler(t *testing.T) {
 	}
 }
 
-func TestMIddleware(t *testing.T) {
+func TestMiddleware(t *testing.T) {
 	temp = true
-	handler := http.HandlerFunc(panicDemo)
+	mux := http.HandlerFunc(panicDemo)
 
 	req, err := http.NewRequest("Get", "/panic/", nil)
 	if err != nil {
 		t.Error(err)
 	}
 	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
+	devMw(mux).ServeHTTP(rr, req)
 }

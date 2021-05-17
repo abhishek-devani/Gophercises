@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/alecthomas/chroma/formatters/html"
 	"github.com/alecthomas/chroma/lexers"
@@ -23,13 +25,21 @@ var Mock2 bool
 var Mock3 bool
 var Mock4 bool
 
+// var Mock5 bool
+
+var temp1 bool
+
 func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/debug/", sourceCodeHandler)
 	mux.HandleFunc("/panic/", panicDemo)
-
-	log.Fatal(http.ListenAndServe(":3000", devMw(mux)))
+	server := &http.Server{Addr: ":3030", Handler: devMw(mux)}
+	if temp1 {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.Shutdown(ctx)
+	}
 }
 
 func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
