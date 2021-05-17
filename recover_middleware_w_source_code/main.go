@@ -23,7 +23,7 @@ func main() {
 	mux.HandleFunc("/panic/", panicDemo)
 	mux.HandleFunc("/panic-after/", panicAfterDemo)
 	mux.HandleFunc("/", hello)
-	log.Fatal(http.ListenAndServe(":3000", devMw(mux, true)))
+	log.Fatal(http.ListenAndServe(":3000", devMw(mux)))
 }
 
 func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
@@ -44,25 +44,25 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_ = line
 	var lines [][2]int
 	if line > 0 {
 		lines = append(lines, [2]int{line, line})
 	}
 	lexer := lexers.Get("go")
 	iterator, _ := lexer.Tokenise(nil, b.String())
-	style := styles.Get("githhub")
+	style := styles.Get("github")
 	if style == nil {
 		style = styles.Fallback
 	}
 	formatter := html.New(html.TabWidth(2), html.HighlightLines(lines))
 	w.Header().Set("content-type", "text/html")
+	fmt.Fprint(w, "<style>pre { font-size: 1.2em; }</style>")
 	formatter.Format(w, style, iterator)
 	// _ = quick.Highlight(w, b.String(), "go", "html", "monokai")
 	// io.Copy(w, file)
 }
 
-func devMw(app http.Handler, dev bool) http.HandlerFunc {
+func devMw(app http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
