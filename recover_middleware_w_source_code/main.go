@@ -17,12 +17,18 @@ import (
 	"github.com/alecthomas/chroma/styles"
 )
 
+var temp bool
+var Mock1 bool
+var Mock2 bool
+var Mock3 bool
+var Mock4 bool
+
 func main() {
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/debug/", sourceCodeHandler)
 	mux.HandleFunc("/panic/", panicDemo)
-	mux.HandleFunc("/panic-after/", panicAfterDemo)
-	mux.HandleFunc("/", hello)
+
 	log.Fatal(http.ListenAndServe(":3000", devMw(mux)))
 }
 
@@ -30,18 +36,18 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.FormValue("path")
 	lineStr := r.FormValue("line")
 	line, err := strconv.Atoi(lineStr)
-	if err != nil {
-		line = -1
+	if err != nil || Mock1 {
+		return
 	}
 	file, err := os.Open(path) // For read access.
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err != nil || Mock2 {
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	b := bytes.NewBuffer(nil)
 	_, err = io.Copy(b, file)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err != nil || Mock3 {
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	var lines [][2]int
@@ -51,15 +57,14 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	lexer := lexers.Get("go")
 	iterator, _ := lexer.Tokenise(nil, b.String())
 	style := styles.Get("github")
-	if style == nil {
-		style = styles.Fallback
+	if style == nil || Mock4 {
+		return
+		// style = styles.Fallback
 	}
 	formatter := html.New(html.TabWidth(2), html.HighlightLines(lines))
 	w.Header().Set("content-type", "text/html")
 	fmt.Fprint(w, "<style>pre { font-size: 1.2em; }</style>")
 	formatter.Format(w, style, iterator)
-	// _ = quick.Highlight(w, b.String(), "go", "html", "monokai")
-	// io.Copy(w, file)
 }
 
 func devMw(app http.Handler) http.HandlerFunc {
@@ -78,20 +83,13 @@ func devMw(app http.Handler) http.HandlerFunc {
 }
 
 func panicDemo(w http.ResponseWriter, r *http.Request) {
-	funcThatPanics()
+	funcThatPanics(temp)
 }
 
-func panicAfterDemo(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "<h1>Hello!</h1>")
-	funcThatPanics()
-}
-
-func funcThatPanics() {
-	panic("Oh no!")
-}
-
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "<h1>Hello!</h1>")
+func funcThatPanics(temp bool) {
+	if !temp {
+		panic("Oh no!")
+	}
 }
 
 func makeLinks(stack string) string {
