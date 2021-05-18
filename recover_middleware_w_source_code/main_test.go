@@ -39,7 +39,6 @@ func TestSourceHandler(t *testing.T) {
 	}
 
 	for i := 0; i < len(testCaseTable); i++ {
-		// var err error
 		req, err := http.NewRequest("GET", "http://localhost:3000/debug/?"+testCaseTable[i].link, nil)
 		if err != nil {
 			t.Fatalf("not able to run")
