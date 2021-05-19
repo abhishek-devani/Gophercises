@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"main/go/src/github.com/abhishek-devani/Gophercises/task/db"
+	// "main/go/src/github.com/abhishek-devani/Gophercises/task/db"
 
+	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/task/db"
 	"github.com/spf13/cobra"
 )
 

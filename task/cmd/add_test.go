@@ -4,11 +4,13 @@ import (
 	"bufio"
 	"io"
 	"log"
-	"main/go/src/github.com/abhishek-devani/Gophercises/task/db"
+
+	// "main/go/src/github.com/abhishek-devani/Gophercises/task/db"
 	"os/exec"
 	"path/filepath"
 	"testing"
 
+	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/task/db"
 	"github.com/boltdb/bolt"
 	"github.com/mitchellh/go-homedir"
 )
