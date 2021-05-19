@@ -16,7 +16,7 @@ var getCmd = &cobra.Command{
 		key := args[0]
 		value, err := v.Get(key)
 		if err != nil {
-			panic(err)
+			return
 		}
 		fmt.Printf("%s = %s\n", key, value)
 	},
