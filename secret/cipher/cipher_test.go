@@ -92,5 +92,5 @@ func checkError(err error) {
 
 func FilePath() string {
 	home, _ := homedir.Dir()
-	return filepath.Join(home, ".test")
+	return filepath.Join(home, "test.txt")
 }
