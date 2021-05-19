@@ -21,36 +21,6 @@ func testFile(key, path string) *TestValut {
 	}
 }
 
-func TestDecryptReader(t *testing.T) {
-	key := "testing string"
-
-	file := FilePath()
-
-	vault := testFile(key, file)
-
-	f, err := os.Open(file)
-	if err != nil {
-		vault.keyValues = make(map[string]string)
-	}
-	defer f.Close()
-
-	Mock5 = true
-	_, err = DecryptReader(vault.encodingKey, f)
-	Mock5 = false
-	checkError(err)
-
-	Mock6 = true
-	_, err = DecryptReader(vault.encodingKey, f)
-	Mock6 = false
-	checkError(err)
-
-	Mock7 = true
-	_, err = DecryptReader(vault.encodingKey, f)
-	Mock7 = false
-	checkError(err)
-
-}
-
 func TestEncryptWriter(t *testing.T) {
 	key := "testing string"
 	file := FilePath()
@@ -80,6 +50,36 @@ func TestEncryptWriter(t *testing.T) {
 	Mock4 = true
 	_, err = EncryptWriter(vault.encodingKey, f)
 	Mock4 = false
+	checkError(err)
+
+}
+
+func TestDecryptReader(t *testing.T) {
+	key := "testing string"
+
+	file := FilePath()
+
+	vault := testFile(key, file)
+
+	f, err := os.Open(file)
+	if err != nil {
+		vault.keyValues = make(map[string]string)
+	}
+	defer f.Close()
+
+	Mock5 = true
+	_, err = DecryptReader(vault.encodingKey, f)
+	Mock5 = false
+	checkError(err)
+
+	Mock6 = true
+	_, err = DecryptReader(vault.encodingKey, f)
+	Mock6 = false
+	checkError(err)
+
+	Mock7 = true
+	_, err = DecryptReader(vault.encodingKey, f)
+	Mock7 = false
 	checkError(err)
 
 }
