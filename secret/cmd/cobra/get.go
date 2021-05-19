@@ -16,6 +16,7 @@ var getCmd = &cobra.Command{
 		key := args[0]
 		value, err := v.Get(key)
 		if err != nil {
+			fmt.Println("No Value Set")
 			return
 		}
 		fmt.Printf("%s = %s\n", key, value)
