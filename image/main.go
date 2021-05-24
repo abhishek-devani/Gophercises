@@ -11,89 +11,85 @@ import (
 	"path/filepath"
 	"strconv"
 	"text/template"
-	"time"
 
 	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/image/primitive"
 )
 
-func main() {
-
-	go func() {
-		t := time.NewTicker(5 * time.Minute)
-		for {
-			<-t.C
-		}
-	}()
-
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		html := `<html><body>
+func BaseHandler(w http.ResponseWriter, r *http.Request) {
+	html := `<html><body>
 			<form action="/upload" method="post" enctype="multipart/form-data">
 				<input type="file" name="image">
 				<button type="submit">Upload Image</button>
 			</form>
 			</body></html>`
-		fmt.Fprint(w, html)
-	})
+	fmt.Fprint(w, html)
+}
 
-	mux.HandleFunc("/modify/", func(w http.ResponseWriter, r *http.Request) {
-		f, err := os.Open("./img/" + filepath.Base(r.URL.Path))
-		if err != nil {
-			return
-		}
-		defer f.Close()
-		ext := filepath.Ext(f.Name())[1:]
+func ModifyHandler(w http.ResponseWriter, r *http.Request) {
+	f, err := os.Open("./img/" + filepath.Base(r.URL.Path))
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	ext := filepath.Ext(f.Name())[1:]
 
-		modeStr := r.FormValue("mode")
-		if modeStr == "" {
-			renderModeChoices(w, r, f, ext)
-			return
-		}
+	modeStr := r.FormValue("mode")
+	if modeStr == "" {
+		renderModeChoices(w, r, f, ext)
+		return
+	}
 
-		mode, err := strconv.Atoi(modeStr)
-		if err != nil {
-			return
-		}
+	mode, err := strconv.Atoi(modeStr)
+	if err != nil {
+		return
+	}
 
-		nStr := r.FormValue("n")
-		if nStr == "" {
-			renderNumShapeChoices(w, r, f, ext, primitive.Mode(mode))
-			return
-		}
+	nStr := r.FormValue("n")
+	if nStr == "" {
+		renderNumShapeChoices(w, r, f, ext, primitive.Mode(mode))
+		return
+	}
 
-		numShapes, err := strconv.Atoi(nStr)
-		if err != nil {
-			return
-		}
-		_ = numShapes
-		http.Redirect(w, r, "/img/"+filepath.Base(f.Name()), http.StatusFound)
-	})
+	numShapes, err := strconv.Atoi(nStr)
+	if err != nil {
+		return
+	}
+	_ = numShapes
+	http.Redirect(w, r, "/img/"+filepath.Base(f.Name()), http.StatusFound)
+}
 
-	mux.HandleFunc("/upload", func(w http.ResponseWriter, r *http.Request) {
-		file, header, err := r.FormFile("image")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		defer file.Close()
+func UploadHandler(w http.ResponseWriter, r *http.Request) {
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
 
-		ext := filepath.Ext(header.Filename)[1:]
-		onDisk, err := tempfile("", ext)
-		if err != nil {
-			return
-		}
-		defer onDisk.Close()
-		_, err = io.Copy(onDisk, file)
-		if err != nil {
-			return
-		}
-		http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
+	ext := filepath.Ext(header.Filename)[1:]
+	onDisk, err := tempfile("", ext)
+	if err != nil {
+		return
+	}
+	defer onDisk.Close()
+	_, err = io.Copy(onDisk, file)
+	if err != nil {
+		return
+	}
+	http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
+}
 
-	})
+func main() {
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", BaseHandler)
+	mux.HandleFunc("/upload", UploadHandler)
+	mux.HandleFunc("/modify/", ModifyHandler)
 
 	fs := http.FileServer(http.Dir("./img/"))
 	mux.Handle("/img/", http.StripPrefix("/img", fs))
+
 	log.Fatal(http.ListenAndServe(":3000", mux))
 
 }
