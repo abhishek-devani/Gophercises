@@ -31,6 +31,7 @@ func ModifyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer f.Close()
+
 	ext := filepath.Ext(f.Name())[1:]
 
 	modeStr := r.FormValue("mode")
@@ -133,6 +134,11 @@ func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSee
 	}
 }
 
+type genOpts struct {
+	N int
+	M primitive.Mode
+}
+
 func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string) {
 	opts := []genOpts{
 		{N: 10, M: primitive.ModeCircle},
@@ -168,11 +174,6 @@ func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker,
 	if err != nil {
 		panic(err)
 	}
-}
-
-type genOpts struct {
-	N int
-	M primitive.Mode
 }
 
 func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) {
