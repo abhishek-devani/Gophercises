@@ -34,11 +34,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/debug/", sourceCodeHandler)
 	mux.HandleFunc("/panic/", panicDemo)
-	server := &http.Server{Addr: ":3030", Handler: devMw(mux)}
 	if temp1 {
+		server := &http.Server{Addr: ":3030", Handler: devMw(mux)}
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		server.Shutdown(ctx)
+	} else {
+		log.Fatal(http.ListenAndServe(":3030", mux))
 	}
 }
 

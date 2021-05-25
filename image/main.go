@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,9 +11,24 @@ import (
 	"path/filepath"
 	"strconv"
 	"text/template"
+	"time"
 
 	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/image/primitive"
 )
+
+var temp bool
+
+var Mock1 bool
+var Mock2 bool
+var Mock3 bool
+var Mock4 bool
+var Mock5 bool
+var Mock6 bool
+var Mock7 bool
+var Mock8 bool
+var Mock9 bool
+var Mock10 bool
+var Mock11 bool
 
 func BaseHandler(w http.ResponseWriter, r *http.Request) {
 	html := `<html><body>
@@ -26,6 +41,7 @@ func BaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ModifyHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("./img/" + filepath.Base(r.URL.Path))
 	f, err := os.Open("./img/" + filepath.Base(r.URL.Path))
 	if err != nil {
 		return
@@ -61,20 +77,19 @@ func ModifyHandler(w http.ResponseWriter, r *http.Request) {
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("image")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err != nil || Mock9 {
 		return
 	}
 	defer file.Close()
 
 	ext := filepath.Ext(header.Filename)[1:]
-	onDisk, err := tempfile("", ext)
-	if err != nil {
+	onDisk, err := Tempfile("", ext)
+	if err != nil || Mock10 {
 		return
 	}
 	defer onDisk.Close()
 	_, err = io.Copy(onDisk, file)
-	if err != nil {
+	if err != nil || Mock11 {
 		return
 	}
 	http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
@@ -91,11 +106,23 @@ func main() {
 	fs := http.FileServer(http.Dir("./img/"))
 	mux.Handle("/img/", http.StripPrefix("/img", fs))
 
-	log.Fatal(http.ListenAndServe(":3000", mux))
+	if temp {
+		server := &http.Server{Addr: ":3000", Handler: mux}
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.Shutdown(ctx)
+	} else {
+		log.Fatal(http.ListenAndServe(":3000", mux))
+	}
 
 }
 
-func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string, mode primitive.Mode) {
+type genOpts struct {
+	N int
+	M primitive.Mode
+}
+
+func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string, mode primitive.Mode) error {
 	opts := []genOpts{
 		{N: 10, M: mode},
 		{N: 20, M: mode},
@@ -103,8 +130,8 @@ func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSee
 		{N: 40, M: mode},
 	}
 	imgs, err := genImages(rs, ext, opts...)
-	if err != nil {
-		return
+	if err != nil || Mock1 {
+		return err
 	}
 
 	html := `<html><body>
@@ -129,17 +156,13 @@ func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSee
 		})
 	}
 	err = tpl.Execute(w, data)
-	if err != nil {
-		panic(err)
+	if err != nil || Mock2 {
+		return err
 	}
+	return nil
 }
 
-type genOpts struct {
-	N int
-	M primitive.Mode
-}
-
-func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string) {
+func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string) error {
 	opts := []genOpts{
 		{N: 10, M: primitive.ModeCircle},
 		{N: 10, M: primitive.ModeBeziers},
@@ -147,8 +170,8 @@ func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker,
 		{N: 10, M: primitive.ModeCombo},
 	}
 	imgs, err := genImages(rs, ext, opts...)
-	if err != nil {
-		return
+	if err != nil || Mock3 {
+		return err
 	}
 
 	html := `<html><body>
@@ -171,9 +194,10 @@ func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker,
 		})
 	}
 	err = tpl.Execute(w, data)
-	if err != nil {
-		panic(err)
+	if err != nil || Mock4 {
+		return err
 	}
+	return nil
 }
 
 func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) {
@@ -181,7 +205,7 @@ func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) 
 	for _, opt := range opts {
 		rs.Seek(0, 0)
 		f, err := genImage(rs, ext, opt.N, opt.M)
-		if err != nil {
+		if err != nil || Mock5 {
 			return nil, err
 		}
 		ret = append(ret, f)
@@ -192,12 +216,12 @@ func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) 
 func genImage(r io.Reader, ext string, numShapes int, mode primitive.Mode) (string, error) {
 
 	out, err := primitive.Transform(r, ext, numShapes, primitive.WithMode(mode))
-	if err != nil {
+	if err != nil || Mock6 {
 		return "", err
 	}
 
-	outFile, err := tempfile("", ext)
-	if err != nil {
+	outFile, err := Tempfile("", ext)
+	if err != nil || Mock7 {
 		return "", err
 	}
 
@@ -207,11 +231,11 @@ func genImage(r io.Reader, ext string, numShapes int, mode primitive.Mode) (stri
 
 }
 
-func tempfile(prefix, ext string) (*os.File, error) {
+func Tempfile(prefix, ext string) (*os.File, error) {
 
 	in, err := ioutil.TempFile("./img/", prefix)
-	if err != nil {
-		return nil, errors.New("main: failed to create temporary file")
+	if err != nil || Mock8 {
+		return nil, err
 	}
 
 	defer os.Remove(in.Name())
