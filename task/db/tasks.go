@@ -19,6 +19,7 @@ type Task struct {
 	Value string
 }
 
+// Initialize a database and open or create a bucket if not exits
 func Init(dbPath string) (*bolt.DB, error) {
 	var err error
 	db, err = bolt.Open(dbPath, 0600, &bolt.Options{Timeout: 1 * time.Second})
@@ -31,6 +32,7 @@ func Init(dbPath string) (*bolt.DB, error) {
 	})
 }
 
+// take an task as a string and create task
 func CreateTask(task string) error {
 	var id int
 	err := db.Update(func(tx *bolt.Tx) error {
@@ -46,6 +48,7 @@ func CreateTask(task string) error {
 	return nil
 }
 
+// List all the tasks
 func AllTasks() ([]Task, error) {
 	var tasks []Task
 
@@ -66,6 +69,7 @@ func AllTasks() ([]Task, error) {
 	return tasks, nil
 }
 
+// Delete Tasks
 func DeleteTasks(key int) error {
 	return db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket(taskBucket)
@@ -73,12 +77,14 @@ func DeleteTasks(key int) error {
 	})
 }
 
+// Take int as an input and convert it into byte slice
 func itob(v int) []byte {
 	b := make([]byte, 8)
 	binary.BigEndian.PutUint64(b, uint64(v))
 	return b
 }
 
+// Take byte slice as an input and convert it into int
 func btoi(b []byte) int {
 	return int(binary.BigEndian.Uint64(b))
 }
