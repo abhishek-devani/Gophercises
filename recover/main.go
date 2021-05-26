@@ -24,6 +24,7 @@ var Mock1 bool
 var Mock2 bool
 var Mock3 bool
 var Mock4 bool
+var Mock5 bool
 
 // var Mock5 bool
 
@@ -32,6 +33,7 @@ var temp1 bool
 func main() {
 
 	mux := http.NewServeMux()
+	mux.HandleFunc("/", hello)
 	mux.HandleFunc("/debug/", sourceCodeHandler)
 	mux.HandleFunc("/panic/", panicDemo)
 	if temp1 {
@@ -40,7 +42,7 @@ func main() {
 		defer cancel()
 		server.Shutdown(ctx)
 	} else {
-		log.Fatal(http.ListenAndServe(":3030", mux))
+		log.Fatal(http.ListenAndServe(":3030", devMw(mux)))
 	}
 }
 
@@ -66,6 +68,8 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	if line > 0 {
 		lines = append(lines, [2]int{line, line})
 	}
+
+	// lexer is a software component that analyzes a string and breaks it up into its component parts
 	lexer := lexers.Get("go")
 	iterator, _ := lexer.Tokenise(nil, b.String())
 	style := styles.Get("github")
@@ -82,10 +86,10 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 func devMw(app http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
-			if err := recover(); err != nil {
+			if err := recover(); err != nil || Mock5 {
 				log.Println(err)
 				stack := debug.Stack()
-				log.Println(string(stack))
+				// log.Println(string(stack))
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprintf(w, "<h1>panic: %v</h1><pre>%s</pre>", err, makeLinks(string(stack)))
 			}
@@ -95,15 +99,12 @@ func devMw(app http.Handler) http.HandlerFunc {
 }
 
 func panicDemo(w http.ResponseWriter, r *http.Request) {
-	funcThatPanics(temp)
-}
-
-func funcThatPanics(temp bool) {
 	if !temp {
 		panic("Oh no!")
 	}
 }
 
+// convert the stack into lines
 func makeLinks(stack string) string {
 	lines := strings.Split(stack, "\n")
 	for li, line := range lines {
@@ -114,14 +115,17 @@ func makeLinks(stack string) string {
 		for i, ch := range line {
 			if ch == ':' {
 				file = line[1:i]
+				// fmt.Println(file)
 				break
 			}
 		}
 		var lineStr strings.Builder
 		for i := len(file) + 2; i < len(line); i++ {
+			// fmt.Printf("len(file):%v, len(line):%v\n", len(file)+2, len(line))
 			if line[i] < '0' || line[i] > '9' {
 				break
 			}
+			// fmt.Println(line[i])
 			lineStr.WriteByte(line[i])
 		}
 		v := url.Values{}
@@ -131,4 +135,8 @@ func makeLinks(stack string) string {
 			line[len(file)+2+len(lineStr.String()):]
 	}
 	return strings.Join(lines, "\n")
+}
+
+func hello(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "<h1>Hello!</h1>")
 }

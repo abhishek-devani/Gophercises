@@ -12,6 +12,15 @@ func TestMain(t *testing.T) {
 	main()
 }
 
+func TestHello(t *testing.T) {
+	req, err := http.NewRequest("GET", "http://localhost:3000/", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	rec := httptest.NewRecorder()
+	hello(rec, req)
+}
+
 func TestMakeLinks(t *testing.T) {
 	stack := debug.Stack()
 	link := makeLinks(string(stack))
@@ -75,4 +84,26 @@ func TestMiddleware(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 	devMw(mux).ServeHTTP(rr, req)
+
+	Mock5 = true
+	devMw(mux).ServeHTTP(rr, req)
+
+}
+
+func TestPanic(t *testing.T) {
+
+	temp = false
+	req, err := http.NewRequest("GET", "http://localhost:3000/panic/", nil)
+	if err != nil {
+		t.Error(err)
+	}
+	rec := httptest.NewRecorder()
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+
+	panicDemo(rec, req)
 }
