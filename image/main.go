@@ -30,6 +30,28 @@ var Mock9 bool
 var Mock10 bool
 var Mock11 bool
 
+func main() {
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", BaseHandler)
+	mux.HandleFunc("/upload", UploadHandler)
+	mux.HandleFunc("/modify/", ModifyHandler)
+
+	fs := http.FileServer(http.Dir("./img/"))
+	mux.Handle("/img/", http.StripPrefix("/img", fs))
+
+	if temp {
+		server := &http.Server{Addr: ":3000", Handler: mux}
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		server.Shutdown(ctx)
+	} else {
+		log.Fatal(http.ListenAndServe(":3000", mux))
+	}
+
+}
+
 func BaseHandler(w http.ResponseWriter, r *http.Request) {
 	html := `<html><body>
 			<form action="/upload" method="post" enctype="multipart/form-data">
@@ -38,6 +60,26 @@ func BaseHandler(w http.ResponseWriter, r *http.Request) {
 			</form>
 			</body></html>`
 	fmt.Fprint(w, html)
+}
+
+func UploadHandler(w http.ResponseWriter, r *http.Request) {
+	file, header, err := r.FormFile("image")
+	if err != nil || Mock9 {
+		return
+	}
+	defer file.Close()
+
+	ext := filepath.Ext(header.Filename)[1:]
+	onDisk, err := Tempfile("", ext)
+	if err != nil || Mock10 {
+		return
+	}
+	defer onDisk.Close()
+	_, err = io.Copy(onDisk, file)
+	if err != nil || Mock11 {
+		return
+	}
+	http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
 }
 
 func ModifyHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,48 +115,6 @@ func ModifyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = numShapes
 	http.Redirect(w, r, "/img/"+filepath.Base(f.Name()), http.StatusFound)
-}
-
-func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	file, header, err := r.FormFile("image")
-	if err != nil || Mock9 {
-		return
-	}
-	defer file.Close()
-
-	ext := filepath.Ext(header.Filename)[1:]
-	onDisk, err := Tempfile("", ext)
-	if err != nil || Mock10 {
-		return
-	}
-	defer onDisk.Close()
-	_, err = io.Copy(onDisk, file)
-	if err != nil || Mock11 {
-		return
-	}
-	http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
-}
-
-func main() {
-
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", BaseHandler)
-	mux.HandleFunc("/upload", UploadHandler)
-	mux.HandleFunc("/modify/", ModifyHandler)
-
-	fs := http.FileServer(http.Dir("./img/"))
-	mux.Handle("/img/", http.StripPrefix("/img", fs))
-
-	if temp {
-		server := &http.Server{Addr: ":3000", Handler: mux}
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		server.Shutdown(ctx)
-	} else {
-		log.Fatal(http.ListenAndServe(":3000", mux))
-	}
-
 }
 
 type genOpts struct {
