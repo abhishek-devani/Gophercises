@@ -24,9 +24,9 @@ func main() {
 		Exit(fmt.Sprintf("Failed to oepn the CSV file: %s\n", filename))
 	}
 
-	lines, err := ReadCSV(file)
+	lines, _ := ReadCSV(file)
 
-	problems, err := ParseLines(lines)
+	problems, _ := ParseLines(lines)
 
 	score := PrintProblems(problems, timeL)
 
