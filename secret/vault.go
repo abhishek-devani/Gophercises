@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"sync"
 
@@ -36,11 +37,12 @@ func (v *Vault) Load() error {
 	f, err := os.Open(v.filepath)
 	if err != nil || Mock1 {
 		v.keyValues = make(map[string]string)
-		return nil
+		return err
 	}
 	defer f.Close()
 	r, err := cipher.DecryptReader(v.encodingKey, f)
 	if err != nil || Mock2 {
+		fmt.Println(err)
 		return err
 	}
 	return v.readKeyValues(r)
@@ -54,11 +56,13 @@ func (v *Vault) readKeyValues(r io.Reader) error {
 func (v *Vault) save() error {
 	f, err := os.OpenFile(v.filepath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil || Mock3 {
+		log.Println(err)
 		return err
 	}
 	defer f.Close()
 	w, err := cipher.EncryptWriter(v.encodingKey, f)
 	if err != nil || Mock4 {
+		log.Println(err)
 		return err
 	}
 	return v.writeKeyValues(w)
@@ -89,6 +93,7 @@ func (v *Vault) Set(key, value string) error {
 	defer v.mutex.Unlock()
 	err := v.Load()
 	if err != nil || Mock7 {
+		log.Println(err)
 		return err
 	}
 	v.keyValues[key] = value

@@ -18,8 +18,10 @@ var setCmd = &cobra.Command{
 		key, value := args[0], args[1:]
 		val := strings.Join(value, " ")
 		err := v.Set(key, val)
+		// fmt.Printf("%v", err)
 		if err != nil || MockSet {
-			return
+			panic(err)
+			// fmt.Println("bug")
 		}
 		fmt.Printf("Value Set Successfully!\n")
 	},
