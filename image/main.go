@@ -83,7 +83,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ModifyHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("./img/" + filepath.Base(r.URL.Path))
+	// fmt.Println("./img/" + filepath.Base(r.URL.Path))
 	f, err := os.Open("./img/" + filepath.Base(r.URL.Path))
 	if err != nil {
 		return

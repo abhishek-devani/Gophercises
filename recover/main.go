@@ -46,6 +46,7 @@ func main() {
 	}
 }
 
+// It handles the source code of given file
 func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	path := r.FormValue("path")
 	lineStr := r.FormValue("line")
@@ -83,6 +84,7 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	formatter.Format(w, style, iterator)
 }
 
+// Middleware to recover the panics
 func devMw(app http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
@@ -98,13 +100,14 @@ func devMw(app http.Handler) http.HandlerFunc {
 	}
 }
 
+// Handle Panic Page
 func panicDemo(w http.ResponseWriter, r *http.Request) {
 	if !temp {
 		panic("Oh no!")
 	}
 }
 
-// convert the stack into lines
+// convert the stack into Links
 func makeLinks(stack string) string {
 	lines := strings.Split(stack, "\n")
 	for li, line := range lines {
@@ -137,6 +140,7 @@ func makeLinks(stack string) string {
 	return strings.Join(lines, "\n")
 }
 
+// Intital Page
 func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "<h1>Hello!</h1>")
 }

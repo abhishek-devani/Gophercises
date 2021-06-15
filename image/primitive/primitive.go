@@ -69,7 +69,6 @@ func Transform(image io.Reader, ext string, NumShapes int, opts ...func() []stri
 		return nil, err
 	}
 
-	// Run primitive w/ -i in.Name() -o out.Name()
 	stdCombo, err := Primitive(in.Name(), out.Name(), NumShapes, args...)
 	if err != nil || Mock4 {
 		return nil, err

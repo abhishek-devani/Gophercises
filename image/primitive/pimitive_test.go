@@ -77,12 +77,15 @@ func TestPrimitive(t *testing.T) {
 }
 
 func TestTempFile(t *testing.T) {
+
 	Mock6 = true
 	_, err := tempFile("", "")
 	CheckError(err)
 	Mock6 = false
+
 	_, err = tempFile("", "")
 	if err != nil {
 		panic(err)
 	}
+
 }
