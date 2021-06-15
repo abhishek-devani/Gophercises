@@ -59,7 +59,7 @@ func DecryptReader(key string, r io.Reader) (*cipher.StreamReader, error) {
 	iv := make([]byte, aes.BlockSize)
 	n, err := r.Read(iv)
 	if n < len(iv) || err != nil || Mock6 {
-		// fmt.Println("hahaha")
+		fmt.Printf("error: %v", err)
 		return nil, err
 		// errors.New("encrypt: unable to read the full iv")
 	}
