@@ -33,8 +33,7 @@ const (
 	ModePolygon
 )
 
-// Withmode is an option for the transform function that will define
-// the mode you want to use. By Default ModeTriangle will be used.
+// This function is used to select the mode. By Default ModeTriangle will be used.
 func WithMode(mode Mode) func() []string {
 	return func() []string {
 		// fmt.Println([]string{"-m", fmt.Sprintf("%d", mode)})
@@ -42,8 +41,7 @@ func WithMode(mode Mode) func() []string {
 	}
 }
 
-// Transform will the provided image and apply a primitive
-// transformation to it, then return a reader to the resulting image.
+// This function will transform the image using primitive package
 func Transform(image io.Reader, ext string, NumShapes int, opts ...func() []string) (io.Reader, error) {
 
 	var args []string
@@ -84,6 +82,7 @@ func Transform(image io.Reader, ext string, NumShapes int, opts ...func() []stri
 	return b, nil
 }
 
+// It will create an image using primitive package with different shapes from an input image
 func Primitive(inputFile, outputFile string, numShapes int, args ...string) (string, error) {
 	// fmt.Println(args)
 	argStr := fmt.Sprintf("-i %s -o %s -n %d", inputFile, outputFile, numShapes)
@@ -93,6 +92,7 @@ func Primitive(inputFile, outputFile string, numShapes int, args ...string) (str
 	return string(b), err
 }
 
+// create the temporary file to store images
 func tempFile(prefix, ext string) (*os.File, error) {
 	in, err := ioutil.TempFile("", prefix)
 	if err != nil || Mock6 {

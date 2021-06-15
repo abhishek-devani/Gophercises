@@ -26,8 +26,6 @@ var Mock3 bool
 var Mock4 bool
 var Mock5 bool
 
-// var Mock5 bool
-
 var temp1 bool
 
 func main() {

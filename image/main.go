@@ -52,6 +52,7 @@ func main() {
 
 }
 
+// Basic page of upload image
 func BaseHandler(w http.ResponseWriter, r *http.Request) {
 	html := `<html><body>
 			<form action="/upload" method="post" enctype="multipart/form-data">
@@ -62,6 +63,7 @@ func BaseHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, html)
 }
 
+// This function is used to upload image
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	file, header, err := r.FormFile("image")
 	if err != nil || Mock9 {
@@ -82,6 +84,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/modify/"+filepath.Base(onDisk.Name()), http.StatusFound)
 }
 
+// It shows all the transformed image based on selection
 func ModifyHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("./img/" + filepath.Base(r.URL.Path))
 	f, err := os.Open("./img/" + filepath.Base(r.URL.Path))
@@ -122,6 +125,7 @@ type genOpts struct {
 	M primitive.Mode
 }
 
+// It will create image using one mode with different shapes
 func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string, mode primitive.Mode) error {
 	opts := []genOpts{
 		{N: 10, M: mode},
@@ -162,6 +166,7 @@ func renderNumShapeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSee
 	return nil
 }
 
+// It will create image with different modes
 func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker, ext string) error {
 	opts := []genOpts{
 		{N: 10, M: primitive.ModeCircle},
@@ -200,6 +205,7 @@ func renderModeChoices(w http.ResponseWriter, r *http.Request, rs io.ReadSeeker,
 	return nil
 }
 
+// Generate images using diff options
 func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) {
 	var ret []string
 	for _, opt := range opts {
@@ -213,6 +219,7 @@ func genImages(rs io.ReadSeeker, ext string, opts ...genOpts) ([]string, error) 
 	return ret, nil
 }
 
+// Generate image for perticular mode and shape
 func genImage(r io.Reader, ext string, numShapes int, mode primitive.Mode) (string, error) {
 
 	out, err := primitive.Transform(r, ext, numShapes, primitive.WithMode(mode))
@@ -231,6 +238,7 @@ func genImage(r io.Reader, ext string, numShapes int, mode primitive.Mode) (stri
 
 }
 
+// It will create temporary file in same directory
 func Tempfile(prefix, ext string) (*os.File, error) {
 
 	in, err := ioutil.TempFile("./img/", prefix)

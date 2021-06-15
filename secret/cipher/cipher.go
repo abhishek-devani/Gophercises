@@ -70,6 +70,7 @@ func DecryptReader(key string, r io.Reader) (*cipher.StreamReader, error) {
 	return &cipher.StreamReader{S: stream, R: r}, nil
 }
 
+// This function return cipher block containing hashed version of key
 func newCipherBlock(key string) (cipher.Block, error) {
 	hasher := md5.New()
 	fmt.Fprint(hasher, key)

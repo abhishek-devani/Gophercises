@@ -19,6 +19,7 @@ var Mock5 bool
 var Mock6 bool
 var Mock7 bool
 
+// It will create a new Vault
 func File(encodingKey, filepath string) *Vault {
 	return &Vault{
 		encodingKey: encodingKey,
@@ -26,6 +27,7 @@ func File(encodingKey, filepath string) *Vault {
 	}
 }
 
+// It is public struct
 type Vault struct {
 	encodingKey string
 	filepath    string
@@ -33,6 +35,7 @@ type Vault struct {
 	keyValues   map[string]string
 }
 
+// It loads vault and if the map does not exist it creates one
 func (v *Vault) Load() error {
 	f, err := os.Open(v.filepath)
 	if err != nil || Mock1 {
@@ -53,6 +56,7 @@ func (v *Vault) readKeyValues(r io.Reader) error {
 	return dec.Decode(&v.keyValues)
 }
 
+// It will write encoding key to vault
 func (v *Vault) save() error {
 	f, err := os.OpenFile(v.filepath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil || Mock3 {
@@ -73,6 +77,7 @@ func (v *Vault) writeKeyValues(w io.Writer) error {
 	return enc.Encode(v.keyValues)
 }
 
+// It is used to retrive value for specific key
 func (v *Vault) Get(key string) (string, error) {
 	v.mutex.Lock()
 	defer v.mutex.Unlock()
@@ -88,6 +93,7 @@ func (v *Vault) Get(key string) (string, error) {
 	return value, nil
 }
 
+// It is used to store key, value pair in Vault
 func (v *Vault) Set(key, value string) error {
 	v.mutex.Lock()
 	defer v.mutex.Unlock()
