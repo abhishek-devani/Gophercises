@@ -1,10 +1,6 @@
 package main
 
 import (
-
-	// "main/go/src/github.com/abhishek-devani/Gophercises/task/cmd"
-	// "main/go/src/github.com/abhishek-devani/Gophercises/task/db"
-
 	"path/filepath"
 
 	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/task/cmd"
