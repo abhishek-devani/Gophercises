@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/abhishek-devani/Gophercises/go/src/github.com/abhishek-devani/Gophercises/image/primitive"
 )
@@ -32,7 +31,7 @@ func TestMain(t *testing.T) {
 	temp = true
 	main()
 	temp = false
-	time.Sleep(10 * time.Second)
+	// time.Sleep(10 * time.Second)
 	main()
 }
 

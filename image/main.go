@@ -48,6 +48,11 @@ func main() {
 		server.Shutdown(ctx)
 	} else {
 		log.Fatal(http.ListenAndServe(":3000", mux))
+		// server := &http.Server{Addr: ":3000", Handler: mux}
+		// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		// time.Sleep(1 * time.Second)
+		// defer cancel()
+		// server.Shutdown(ctx)
 	}
 
 }
