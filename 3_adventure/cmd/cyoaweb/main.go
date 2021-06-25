@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	cyoa "github.com/abhishek-devani/Gophercises/3_adventure"
 )
 
 func main() {
