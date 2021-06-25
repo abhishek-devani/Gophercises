@@ -149,3 +149,51 @@ db.listingsAndReviews.find({ "property_type": "House", "amenities": "Changing ta
 
 // projection syntax
 db.<collection>.find({ <query> }, { <projection> } )
+1 - include the field
+0 - exclude the field
+Use only 1s or only 0s
+
+// sub element of array
+db.grades.find({ "class_id":431 }, {"scores":{$elemMatch:{"score":{"$gt":85}}}}).count()
+
+// array of sub document
+db.trips.findOne({ "start station location.type": "Point" }) 
+{ "address.city": {"$regex": "NEW YORK"} } // regex is to compare exact pattern of string
+
+// Aggregation Framework
+$match: will check for matching string
+$project: will displays only specific fields
+$group: it will count total number of items
+db.listingsAndReviews.aggregate([
+                    { "$match": { "amenities": "Wifi" } },
+                    { "$project": { "price": 1, "address": 1, "_id": 0 }}]).pretty()
+
+db.listingsAndReviews.aggregate([
+                { "$project": { "address": 1, "_id": 0 }},
+                { "$group":   { "_id": "$address.country", "count": { "$sum": 1 } } }])
+
+// sort and init method
+db.zips.find().sort({"pop":-1}).limit(1).pretty()
+1 for  ascending
+-1 for descending
+
+// index
+db.trips.find({ "birth year": 1989 })
+db.trips.find({ "start station id": 476 }).sort( { "birth year": 1 } )
+db.trips.createIndex({ "birth year": 1 })
+db.trips.createIndex({ "start station id": 1, "birth year": 1 })
+
+// data modeling
+data is stored in the way that it is used.
+data is accessed together stored together
+
+// upsert
+db.collection.updateOne({<query>}, {<update>}, {"upsert":true})
+update will happen if given criteria is matched
+insert will happen if given criteria is not matched
+db.iot.updateOne({ "sensor": r.sensor, "date": r.date,
+                   "valcount": { "$lt": 48 } },
+                    { "$push": { "readings": { "v": r.value, "t": r.time } },
+                    "$inc": { "valcount": 1, "total": r.value } },
+                 { "upsert": true })
+
