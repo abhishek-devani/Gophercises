@@ -102,6 +102,7 @@ func UpdatePersonEndpoint(response http.ResponseWriter, request *http.Request) {
 
 	result, _ := collection.UpdateOne(context.Background(), filter, update)
 	json.NewEncoder(response).Encode(result)
+
 }
 
 func DeletePersonEndpoint(response http.ResponseWriter, request *http.Request) {
