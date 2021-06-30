@@ -1,0 +1,40 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+func main() {
+
+	// FileServer
+
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprintf(w, "Welcome to my website!")
+	// })
+
+	// fileserver is used to serve static assets like js and css. we have inbuild fileserver to to point uri path
+	// fs := http.FileServer(http.Dir("static/"))
+	// http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	// Routing using Mux
+
+	r := mux.NewRouter()
+	r.HandleFunc("/books/{title}/page/{page}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		title := vars["title"]
+		page := vars["page"]
+
+		fmt.Fprintf(w, "You've requested the book: %s on page %s\n", title, page)
+	})
+
+	r.HandleFunc("/books/{title}", temp).Host("www.mybookstore.com")
+	r.HandleFunc("/books/{title}", temp).Schemes("https")
+	http.ListenAndServe(":3000", nil)
+}
+
+func temp(w http.ResponseWriter, r *http.Request) {
+
+}

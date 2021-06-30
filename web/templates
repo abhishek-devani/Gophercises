@@ -1,0 +1,49 @@
+package main
+
+import (
+	"net/http"
+	"text/template"
+)
+
+type Todo struct {
+	Title string
+	Done  bool
+}
+
+type TodoPageData struct {
+	PageTitle string
+	Todos     []Todo
+}
+
+func main() {
+
+	// html := `<html><body>
+	// 		{{range .}}
+	// 			<a href="/modify/{{.Name}}?mode={{.Mode}}&n={{.NumShapes}}">
+	// 				<img style="width: 20%;" src="/img/{{.Name}}">
+	// 			</a>
+	// 		{{end}}
+	// 		</body></html>`
+	// tpl := template.Must(template.New("").Parse(html))
+
+	// tpl :=
+
+	http.HandleFunc("/", tmp)
+	http.ListenAndServe(":3000", nil)
+
+}
+
+func tmp(w http.ResponseWriter, r *http.Request) {
+
+	data := TodoPageData{
+		PageTitle: "My TODO list",
+		Todos: []Todo{
+			{Title: "Task 1", Done: false},
+			{Title: "Task 2", Done: true},
+			{Title: "Task 3", Done: true},
+		},
+	}
+	tpl := template.Must(template.ParseFiles("tmp.html"))
+	tpl.Execute(w, data)
+
+}

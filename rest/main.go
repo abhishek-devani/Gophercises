@@ -9,6 +9,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
+	// "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -133,6 +134,7 @@ func main() {
 	client, _ = mongo.Connect(ctx, clientOptions)
 
 	router := mux.NewRouter()
+
 	router.HandleFunc("/person", CreatePersonEndpoint).Methods("POST")
 	router.HandleFunc("/people", GetPeopleEndpoint).Methods("GET")
 	router.HandleFunc("/person/{id}", GetPersonEndpoint).Methods("GET")
